@@ -1,0 +1,27 @@
+ASSEMBLY = testbed
+BUILD_DIR := bin
+
+ENGINE_LINK := -lengine
+
+# MAC OSX SPECIFIC
+
+BUILD_PLATFORM := macos
+EXTENSION:= 
+DEFINES =
+COMPILER_FLAGS := #-Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
+INCLUDE_FLAGS := -Iengine/src -I$(ASSEMBLY)/src
+LINKER_FLAGS := -L./$(BUILD_DIR) $(ENGINE_LINK) -Wl,-rpath,.
+
+SRC_FILES := $(shell find $(ASSEMBLY) -name *.c)
+
+DEFINES += -D_DEBUG
+COMPILER_FLAGS += -g -MD
+LINKER_FLAGS += -g
+
+build: 
+	@mkdir -p $(BUILD_DIR)
+	@clang $(SRC_FILES) $(DEFINES) -o $(BUILD_DIR)/$(ASSEMBLY) $(LINKER_FLAGS) $(INCLUDE_FLAGS)
+
+clean:
+	@rm -rf $(BUILD_DIR)/lib$(ASSEMBLY)$(EXTENSION)
+	@rm -rf $(BUILD_DIR)/$(ASSEMBLY)*
