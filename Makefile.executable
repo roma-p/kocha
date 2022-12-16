@@ -1,27 +1,48 @@
-ASSEMBLY = testbed
-BUILD_DIR := bin
+BUILD_DIR = bin
+ASSEMBLY  = testbed
+COMPILER_FLAGS = -Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
 
-ENGINE_LINK := -lengine
-
-# MAC OSX SPECIFIC
-
-BUILD_PLATFORM := macos
-EXTENSION:= 
 DEFINES =
-COMPILER_FLAGS := #-Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
-INCLUDE_FLAGS := -Iengine/src -I$(ASSEMBLY)/src
-LINKER_FLAGS := -L./$(BUILD_DIR) $(ENGINE_LINK) -Wl,-rpath,.
+ENGINE_LINK = -lengine
 
-SRC_FILES := $(shell find $(ASSEMBLY) -name *.c)
+SRC_FILES = $(shell find $(ASSEMBLY) -name *.c)
+INCLUDE_FLAGS = -Iengine/src -I$(ASSEMBLY)/src
+LINKER_FLAGS = -L./$(BUILD_DIR) $(ENGINE_LINK) -Wl,-rpath,.
+
+# WINDOWS --------------------------------------------------------------------
+
+ifeq ($(OS), Windows_NT)
+
+	BUILD_PLATFORM=windows
+	EXTENSION=.exe
+	#TODO: not suppored
+else
+# LINUX ----------------------------------------------------------------------
+	uname_s = $(shell uname -s)
+	ifeq ($(uname_s),Linux)
+		# TODO: not suppored
+		BUILD_PLATFORM = Linux
+		EXTENSION = 
+	endif
+# MACOS ----------------------------------------------------------------------
+	ifeq ($(uname_s),Darwin)
+		BUILD_PLATFORM = macos
+		EXTENSION = 
+	endif
+endif
 
 DEFINES += -D_DEBUG
 COMPILER_FLAGS += -g -MD
 LINKER_FLAGS += -g
 
 build: 
+	@echo "compiling $(ASSEMBLY) for $(BUILD_PLATFORM)"
 	@mkdir -p $(BUILD_DIR)
 	@clang $(SRC_FILES) $(DEFINES) -o $(BUILD_DIR)/$(ASSEMBLY) $(LINKER_FLAGS) $(INCLUDE_FLAGS)
 
 clean:
+	@echo "cleaning $(BUILD_DIR)/lib$(ASSEMBLY)$(EXTENSION)"
+	@echo "cleaning $(BUILD_DIR)/$(ASSEMBLY)"
 	@rm -rf $(BUILD_DIR)/lib$(ASSEMBLY)$(EXTENSION)
 	@rm -rf $(BUILD_DIR)/$(ASSEMBLY)*
+

@@ -1,20 +1,39 @@
 BUILD_DIR = bin
-
-BUILD_PLATFORM := macos
-EXTENSION:= .dylib 
-
 ASSEMBLY = engine
+COMPILER_FLAGS = -Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
 DEFINES = -dynamiclib -fvisibility=hidden -DKEXPORT
-COMPILER_FLAGS := -Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
-INCLUDE_FLAGS = -I/engine/src
-LINKER_FLAGS = -lvulkan
 
-SRC_FILES := $(shell find $(ASSEMBLY) -type f \( -name "*.c" -o -name "*.m" \))
+# WINDOWS --------------------------------------------------------------------
+ifeq ($(OS), Windows_NT)
+	# TODO: not suppored
+	BUILD_PLATFORM = windows
+	EXTENSION = .dll
+else
+# LINUX ----------------------------------------------------------------------
+	uname_s = $(shell uname -s)
+	ifeq ($(uname_s),Linux)
+		# TODO: not suppored
+		BUILD_PLATFORM = Linux
+		EXTENSION = .so
+	endif
+# MACOS ----------------------------------------------------------------------
+	ifeq ($(uname_s),Darwin)
+		SRC_FILES = $(shell find $(ASSEMBLY) -type f \( -name "*.c" -o -name "*.m" \))
+		BUILD_PLATFORM = macos
+		EXTENSION = .dylib 
+		
+		INCLUDE_FLAGS = -I/engine/src
+		LINKER_FLAGS = -lvulkan
+	endif
+endif
 
 build: 
+	@echo "compiling $(ASSEMBLY) for $(BUILD_PLATFORM)"
 	@mkdir -p $(BUILD_DIR)
 	@clang $(SRC_FILES) $(DEFINES) -o $(BUILD_DIR)/lib$(ASSEMBLY)$(EXTENSION) $(LINKER_FLAGS) $(INCLUDE_FLAGS)
 
 clean:
+	@echo "cleaning $(BUILD_DIR)/lib$(ASSEMBLY)$(EXTENSION)"
+	@echo "cleaning $(BUILD_DIR)/$(ASSEMBLY)"
 	@rm -rf $(BUILD_DIR)/lib$(ASSEMBLY)$(EXTENSION)
 	@rm -rf $(BUILD_DIR)/$(ASSEMBLY)
