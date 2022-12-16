@@ -1,5 +1,5 @@
+ASSEMBLY  = engine
 BUILD_DIR = bin
-ASSEMBLY = engine
 COMPILER_FLAGS = -Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
 DEFINES = -dynamiclib -fvisibility=hidden -DKEXPORT
 

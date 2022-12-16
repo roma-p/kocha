@@ -10,7 +10,6 @@ INCLUDE_FLAGS = -Iengine/src -I$(ASSEMBLY)/src
 LINKER_FLAGS = -L./$(BUILD_DIR) $(ENGINE_LINK) -Wl,-rpath,.
 
 # WINDOWS --------------------------------------------------------------------
-
 ifeq ($(OS), Windows_NT)
 
 	BUILD_PLATFORM=windows

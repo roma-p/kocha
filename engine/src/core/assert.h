@@ -46,4 +46,3 @@ KAPI void report_assertion_failure(const char* expression, const char* message, 
 #define KASSERT_DEBUG(expr);
 #endif
 
-
