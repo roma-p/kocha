@@ -1,13 +1,14 @@
 BUILD_DIR = bin
 ASSEMBLY  = testbed
 COMPILER_FLAGS = -Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
-
 DEFINES =
 ENGINE_LINK = -lengine
 
 SRC_FILES = $(shell find $(ASSEMBLY) -name *.c)
-INCLUDE_FLAGS = -Iengine/src -I$(ASSEMBLY)/src
-LINKER_FLAGS = -L./$(BUILD_DIR) $(ENGINE_LINK) -Wl,-rpath,.
+INCLUDE_FLAGS = -Iengine/src -I$(ASSEMBLY)/src -I$(GLFW_SDK)/include
+LINKER_FLAGS = -L./$(BUILD_DIR) $(ENGINE_LINK) -Wl,-rpath,. -L$(GLFW_SDK)/lib -lglfw
+
+#TODO: should not have to pass glfw here if I'm correct... (i don't need explicit vulkan so...)
 
 # WINDOWS --------------------------------------------------------------------
 ifeq ($(OS), Windows_NT)

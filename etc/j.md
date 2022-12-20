@@ -3,6 +3,13 @@
 
 -> log macro: K before it.
 
+platform_macos.m
+-> renamed to c (and patched) on livestream from 5 september. 
+-> .c created on 17 august.
+    -> video of 20 august: no macos.c (at least at 10mins)
+    -> added out of stream... no exploantions, best I can do is copy paste stuff.
+
+missing glfw / glm (brew it)
 
 # 15/12/22 -------------------------------------------------------------------
 

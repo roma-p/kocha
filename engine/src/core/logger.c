@@ -6,6 +6,7 @@
 
 b8 log_init(){
     //TODO : create log file
+    return TRUE;
 }
 
 void log_stop(){
@@ -15,8 +16,12 @@ void log_stop(){
 
 void log_output(log_level level, const char* message, ...){
     const char * level_strings[6] = {
-	"[FATAL]: ", "[ERROR]: ",  "[WARN]: ", 
-	"[INFO]: ", "[DEBUG]: ", "[TRACE]: ", 
+	"[FATAL]: ",
+	"[ERROR]: ",
+	"[WARN]:  ", 
+	"[INFO]:  ", 
+	"[DEBUG]: ", 
+	"[TRACE]: ", 
     }; 
     //b8 is_error = level < 2;
     char out_message[32000];

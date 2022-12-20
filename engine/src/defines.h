@@ -63,13 +63,13 @@ STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 #define KPLATFORM_ANDROID 1
 #endif
 #elif defined(__unix__)
-#define KPLATFORM_UNIX = 1
+#define KPLATFORM_UNIX 1
 #elif defined(__POSIX_VERSION)
-#define KPLATFORM_POSIX = 1
+#define KPLATFORM_POSIX 1
 
 // APPLE
 #elif __APPLE__
-#define KPLATFORM_APPLE = 1
+#define KPLATFORM_APPLE 1
 #include <TargetConditionals.h>
 #if TARGET_IPHONE_SIMULATOR
 #define KPLATFORM_IOS 1
