@@ -5,7 +5,7 @@
 // Include vulkan before GLFW. 
 #include <vulkan/vulkan.h>
 
-#include "../core/logger.h"
+#include "core/logger.h"
 
 // FIXME : ? 
 #ifndef GLFW_INCLUDE_NONE

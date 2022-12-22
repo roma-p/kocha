@@ -1,5 +1,5 @@
 #include "logger.h"
-#include "../platform/platform.h"
+#include "platform/platform.h"
 
 #include <stdio.h>
 #include <string.h>

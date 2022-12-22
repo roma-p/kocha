@@ -1,6 +1,6 @@
 BUILD_DIR = bin
 ASSEMBLY  = testbed
-COMPILER_FLAGS = -Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
+COMPILER_FLAGS = -g -shared -fdeclspec -fPIC
 DEFINES =
 ENGINE_LINK = -lengine
 

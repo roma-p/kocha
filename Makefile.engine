@@ -1,7 +1,7 @@
 ASSEMBLY  = engine
 BUILD_DIR = bin
-COMPILER_FLAGS = -Wall -Werror -Wvla -Werror=vla -Wgnu-folding-constant -Wno-missing-braces -fdeclspec -fPIC
-DEFINES = -dynamiclib -fvisibility=hidden -DKEXPORT
+COMPILER_FLAGS = -g -shared -fdeclspec -fPIC
+DEFINES = -D_DEBUG -DKEXPORT -dynamiclib
 GLFW_SDK = /opt/homebrew/Cellar/glfw/3.3.8
 
 # WINDOWS --------------------------------------------------------------------
@@ -22,7 +22,7 @@ else
 		SRC_FILES = $(shell find $(ASSEMBLY) -type f \( -name "*.c" -o -name "*.m" \))
 		BUILD_PLATFORM = macos
 		EXTENSION = .dylib 
-		INCLUDE_FLAGS = -I/engine/src -I$(GLFW_SDK)/include
+		INCLUDE_FLAGS = -Iengine/src -I$(GLFW_SDK)/include
 		LINKER_FLAGS = -lvulkan -lglfw -L$(GLFW_SDK)/lib
 	endif
 endif
