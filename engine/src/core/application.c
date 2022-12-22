@@ -58,21 +58,21 @@ b8 application_create(game* game_inst){
 
 b8 application_run() {
     while(app_state.is_running) {
-	if(!platform_pump_messages(&app_state.platform)) {
-	    app_state.is_running = FALSE;
-	}
-	if(!app_state.is_suspended) {
-	    if(!app_state.game_inst->update(app_state.game_inst, (f32)0)){
-		LOG_FATAL("game update failed, shutting down");
-		app_state.is_running = FALSE;
-		break;
-	    }
-	    if(!app_state.game_inst->render(app_state.game_inst, (f32)0)){
-		LOG_FATAL("game render failed, shutting down");
-		app_state.is_running = FALSE;
-		break;
-	    }
-	}
+		if(!platform_pump_messages(&app_state.platform)) {
+	    	app_state.is_running = FALSE;
+		}
+		if(!app_state.is_suspended) {
+		    if(!app_state.game_inst->update(app_state.game_inst, (f32)0)){
+				LOG_FATAL("game update failed, shutting down");
+				app_state.is_running = FALSE;
+				break;
+		    }
+		    	if(!app_state.game_inst->render(app_state.game_inst, (f32)0)){
+				LOG_FATAL("game render failed, shutting down");
+				app_state.is_running = FALSE;
+				break;
+		    }
+		}
     }
     app_state.is_running = FALSE;
     platform_shutdown(&app_state.platform);
