@@ -3,7 +3,7 @@
 #include <entry.h>
 
 // TEMP 
-#include <platform/platform.h>
+#include <core/kmemory.h>
 
 extern b8 create_game(game* out_game){
 
@@ -19,7 +19,7 @@ extern b8 create_game(game* out_game){
     out_game->on_resize = game_resize;
 
     //????
-    out_game->state = platform_allocate(sizeof(game_state), FALSE);
+    out_game->state = kallocate(sizeof(game_state), MEMORY_TAG_GAME);
 
     return TRUE;
 }
