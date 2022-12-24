@@ -1,11 +1,13 @@
 #include "application.h"
 #include "game_types.h"
 
-#include "logger.h"
 
 #include "platform/platform.h"
+
+#include "core/logger.h"
 #include "core/kmemory.h"
 #include "core/event.h"
+#include "core/input.h"
 
 typedef struct application_state {
     game* game_inst;
@@ -29,6 +31,8 @@ b8 application_create(game* game_inst){
     app_state.game_inst = game_inst;
 
     log_init();
+    input_initialize();
+
     LOG_FATAL("C'est la merde %f", 3.14f);
     LOG_ERROR("C'est la merde %d", 4);
     LOG_WARN("C'est la merde %d", 4);
@@ -66,7 +70,6 @@ b8 application_create(game* game_inst){
 }
 
 b8 application_run() {
-
     LOG_INFO(get_memory_usage_str());
 
     while(app_state.is_running) {
@@ -84,10 +87,14 @@ b8 application_run() {
 		app_state.is_running = FALSE;
 		break;
 	    }
+
+	    // input updated last to be processed on next frame.
+	    input_update(0);
 	}
     }
     app_state.is_running = FALSE;
     event_shutdown();
+    input_shutdown();
     platform_shutdown(&app_state.platform);
     return TRUE;
 }
