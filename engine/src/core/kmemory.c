@@ -1,6 +1,7 @@
 #include "kmemory.h"
 
 #include "core/logger.h"
+#include "core/kstring.h"
 #include "platform/platform.h"
 
 // TODO: custom string lib
@@ -112,8 +113,8 @@ char* get_memory_usage_str(){
 	 // pointer arithmetics : get a pointer of str that starts at char .... ???
 	 // ponter arithmetics to learn...
     }
-    char* out_string = strdup(buffer); // _strdup malloc a string from the stack "buffer" str.
-					// so when calling this func, need to free out_string after.
+    char* out_string = string_duplicate(buffer); // _strdup malloc a string from the stack "buffer" str.
+						 // so when calling this func, need to free out_string after.
     return out_string;
 }
 

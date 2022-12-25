@@ -56,13 +56,14 @@ void input_process_key(keys key, b8 pressed) {
     //Fire off an event for immediate processing.
     event_context context;
     context.data.u16[0] = key; 
+
     // no sender in this case. guess we don't care...
     event_fire(pressed ? EVENT_CODE_KEY_PRESSED : EVENT_CODE_KEY_RELEASED, 0, context);
 }
 
 void input_process_button(buttons button, b8 pressed) {
     if (state.mouse_current.buttons[button] == pressed) {
-	return ;
+	return;
     }
     state.mouse_current.buttons[button] = pressed;
     event_context context;

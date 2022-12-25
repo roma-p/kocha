@@ -166,3 +166,4 @@ KAPI void input_get_previous_mouse_position(i32* x, i32* y);
 void input_process_button(buttons button, b8 pressed);
 void input_process_mouse_move(i16 x, i16 y);
 void input_process_mouse_wheel(i8 z_delta);
+

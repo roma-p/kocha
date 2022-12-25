@@ -1,5 +1,7 @@
 #include "core/event.h"
+
 #include "core/kmemory.h"
+#include "core/logger.h"
 #include "containers/darray.h"
 
 typedef struct registered_event {
@@ -41,6 +43,7 @@ void event_shutdown() {
 }
 
 b8 event_register(u16 code, void* listener, PFN_on_event on_event) {
+
     if(is_initialized == FALSE) {
         return FALSE;
     }
