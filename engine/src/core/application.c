@@ -8,6 +8,7 @@
 #include "core/kmemory.h"
 #include "core/event.h"
 #include "core/input.h"
+#include "core/clock.h"
 
 typedef struct application_state {
     game* game_inst;
@@ -17,6 +18,7 @@ typedef struct application_state {
     i16 width;
     i16 height;
     f64 last_time;
+    clock clock;
 } application_state;
 
 static b8 initialized = FALSE;
@@ -71,26 +73,62 @@ b8 application_create(game* game_inst){
 }
 
 b8 application_run() {
+    clock_start(&app_state.clock);
+    clock_update(&app_state.clock);
+    app_state.last_time = app_state.clock.elapsed;
+
+    u8 frame_count        = 0;
+    f64 running_time      = 0;
+    f64 target_frame_time = 1.0f/60;
+
     LOG_INFO(get_memory_usage_str());
 
     while(app_state.is_running) {
+
 	if(!platform_pump_messages(&app_state.platform)) {
 	    app_state.is_running = FALSE;
 	}
 	if(!app_state.is_suspended) {
-	    if(!app_state.game_inst->update(app_state.game_inst, (f32)0)){
+
+	    // frame start calculation
+	    clock_update(&app_state.clock);
+	    f64 current_time     = app_state.clock.elapsed;
+	    f64 delta            = current_time - app_state.last_time;
+	    f64 frame_start_time = platform_get_absolute_time();
+
+	    if(!app_state.game_inst->update(app_state.game_inst, (f32)delta)){
 		LOG_FATAL("game update failed, shutting down");
 		app_state.is_running = FALSE;
 		break;
 	    }
-	    if(!app_state.game_inst->render(app_state.game_inst, (f32)0)){
+	    if(!app_state.game_inst->render(app_state.game_inst, (f32)delta)){
 		LOG_FATAL("game render failed, shutting down");
 		app_state.is_running = FALSE;
 		break;
 	    }
 
+	    // frame start calculation
+	    f64 frame_end_time = platform_get_absolute_time();
+	    f64 elaped_frame_time = frame_end_time - frame_start_time;
+	    running_time += elaped_frame_time;
+	    f64 remaining_frame_time_s = target_frame_time - elaped_frame_time;
+	    // I guess if positive we drop a frame.
+	    
+
+	    // FIXME: limiting frames hardcoded to FALSE ! 
+	    if(remaining_frame_time_s > 0) {
+		u64 remaining_frame_time_ms = remaining_frame_time_s * 1000;
+		b8 limit_frames = FALSE;
+		if(remaining_frame_time_ms > 0 && limit_frames) {
+		    platform_sleep(remaining_frame_time_ms - 1);
+		}
+		frame_count ++;
+	    }
+
 	    // input updated last to be processed on next frame.
-	    input_update(0);
+	    input_update(delta);
+
+	    app_state.last_time = current_time;
 	}
     }
     app_state.is_running = FALSE;
