@@ -1,3 +1,43 @@
+# 28/12/22 -------------------------------------------------------------------
+
+##vid14: 
+-----------------
+
+vulkan layers : validation mlayers, used for debugging. None by default. 
+extension and layers: const char**.  -> use of darray.
+
+string.h -> OK 
+-> add string_equals (for now wrap strcmp, but later own implementation).
+
+required_extensions: 
+    -> VK_KHR_SURFACE_EXTENSION_NAME: used to draw surfaces.
+    -> add feature to get platform specific extensions.
+	platform_get_required_extension_names(&required_extensions)
+    -> if debug -> VK_EXT_DEGU_UTILS_EXTENSION_NAME.
+    -> if debug: print all required extensiosn.
+    
+new file vulkan_platform.h to host get_required_extension_names
+!! func has triple pointers !!! 
+    -> string is a characeter array, so one *
+    -> an array of string is **
+    -> a pointer of an array of string is ***
+implementation of func is in platform_macos / platform_win_32 etc...
+    ... but what if we do'nt use VULKAN?  
+in specific implementation -> needs VK_KHR_win32_surface or platform specific extensions.
+
+TODO:
+
+    - missing extension for macos surface (neither macos / metal are found...)
+    - print all extensions as debug -> find out where debug is defined.
+    - creates_info apple specific to deport in vulkan_platform  / macos platform too.
+    - forcing metal or macos surface -> -9
+
+
+
+
+
+-----------------
+
 # 22/12/22 -------------------------------------------------------------------
 
 architecture um up: 

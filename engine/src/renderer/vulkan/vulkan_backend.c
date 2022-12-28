@@ -3,6 +3,7 @@
 #include "containers/darray.h"
 #include "renderer/vulkan/vulkan_backend.h"
 #include "renderer/vulkan/vulkan_types.inl"
+#include "renderer/vulkan/vulkan_platform.h"
 
 static vulkan_context context;
 
@@ -17,10 +18,16 @@ b8 vulkan_renderer_backend_initialize(
     //app_info created on stack because once vkinstance created, no need for app_info ???
 
     const char** required_extensions = darray_create(const char*);
+    //darray_push(required_extensions, &VK_KHR_SURFACE_EXTENSION_NAME);
+    platform_get_required_extension_names(&required_extensions);
+    #if defined(_DEBUG)
+	darray_push(required_extensions, &VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
-    // TODO: put this in platform layer somehow.
-    #if KPLATFORM_APPLE == 1
-    darray_push(required_extensions, &VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+	LOG_DEBUG("Required vulkan extensions are:");
+	i32 i; i32 count = darray_length(required_extensions);
+	for(i=0; i<count; i++){
+	    LOG_DEBUG(" - %s", required_extensions[i]);
+	}
     #endif
 
     //setup vulkan instance.
@@ -43,6 +50,9 @@ b8 vulkan_renderer_backend_initialize(
     #endif
 
     VkResult result = vkCreateInstance(&create_info, context.allocator, &context.instance);
+
+    darray_destroy(required_extensions);
+
     if (result != VK_SUCCESS){
 	LOG_ERROR("vkcreateInstance failed with result: %d", result);
 	return FALSE;

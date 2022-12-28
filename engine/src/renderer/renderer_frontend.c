@@ -4,12 +4,12 @@
 #include "core/logger.h"
 #include "core/kmemory.h"
 
-static renderer_backend* backend = 0;
+static renderer_backend* backend = 0; // ??? why pointer here when other static struct are declared as plain data?
 
 b8 renderer_initialize(const char * application_name, struct platform_state* plat_state){
     backend = kallocate(sizeof(renderer_backend), MEMORY_TAG_RENDERER);
 
-    //TODO: make this configuration.
+    //TODO: make this configuratable.
     renderer_backend_create(RENDERER_BACKEND_TYPE_VULKAN, plat_state, backend);
     backend->frame_number = 0;
 

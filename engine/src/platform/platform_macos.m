@@ -7,6 +7,7 @@
 #include "core/input.h"
 #include "core/kstring.h"
 #include "core/logger.h"
+#include "renderer/vulkan/vulkan_types.inl"
 
 // Include vulkan before GLFW. 
 #include <vulkan/vulkan.h>
@@ -208,6 +209,28 @@ void platform_sleep(u64 ms) {
     ts.tv_sec = (long)((f64)ms * 0.001);
     ts.tv_nsec = ((long)ms % 1000) * 1000 * 1000;
     nanosleep(&ts, 0);
+}
+
+// RENDERER -------------------------------------------------------------------
+
+// TOOD: (1) vulkan hardcoded, (2) need to be patched when moving to metal.
+void platform_get_required_extension_names(const char*** names_darray) {
+    // needed for macos since vulkan 1.3
+    darray_push(*names_darray, &VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+
+    // FIXME: Not sure which extension to load for macos...
+    darray_push(*names_darray, &"VK_MVK_macos_surface");
+    //darray_push(*names_darray, &"VK_EXT_metal_surface");
+
+    u32 count = 0;
+    const char** extensions = glfwGetRequiredInstanceExtensions(&count);
+    for (u32 i = 0; i < count; ++i) {
+        if (strings_equal(extensions[i], "VK_KHR_surface")) {
+            // We already include "VK_KHR_surface", so skip this.
+            continue;
+        }
+        darray_push(*names_darray, extensions[i]);
+    }
 }
 
 // INPUT ----------------------------------------------------------------------
