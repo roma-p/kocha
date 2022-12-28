@@ -42,9 +42,6 @@ b8 vulkan_renderer_backend_initialize(
     create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
     #endif
 
-
-
-
     VkResult result = vkCreateInstance(&create_info, context.allocator, &context.instance);
     if (result != VK_SUCCESS){
 	LOG_ERROR("vkcreateInstance failed with result: %d", result);
