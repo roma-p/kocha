@@ -16,5 +16,5 @@ u64 string_length(const char* str) {
 }
 
 b8 strings_equal(const char* str_1, const char* str_2){
-    return strcmp(str_1, str_2);
+    return strcmp(str_1, str_2) == 0;
 }

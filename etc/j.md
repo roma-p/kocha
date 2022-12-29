@@ -1,7 +1,7 @@
 # 28/12/22 -------------------------------------------------------------------
 
 ##vid14: 
------------------
+-- EXTENSIONS ---------------
 
 vulkan layers : validation mlayers, used for debugging. None by default. 
 extension and layers: const char**.  -> use of darray.
@@ -33,10 +33,18 @@ TODO:
     - forcing metal or macos surface -> -9
 
 
+-- VALIDATION LAYERS ---------------
 
+- validation layer -> same data struct than extensions. 
+- but only to load in debug mode.
+- add VK_LAYER_KRONOS_validation
+- check if layer available:
+    - get all properties : vKEnumarateInstanceLayerProperties
+    - VK_CHECK ???
+    - VkLayerProperties pointer
+- VK_CHECK: macro to check VKResult : check for success; defines un vulkan_types.inl
+    assert stuff! VK_CHECK no message? shall add one. 
 
-
------------------
 
 # 22/12/22 -------------------------------------------------------------------
 
