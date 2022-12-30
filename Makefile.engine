@@ -1,8 +1,9 @@
 ASSEMBLY  = engine
-BUILD_DIR = bin
+BUILD_DIR = build
 COMPILER_FLAGS = -g -shared -fdeclspec -fPIC
 DEFINES = -D_DEBUG -DKEXPORT -dynamiclib
 GLFW_SDK = /opt/homebrew/Cellar/glfw/3.3.8
+VULKAN_SDK = /Users/romainpelle/VulkanSDK/1.3.231.1/macOS
 
 # WINDOWS --------------------------------------------------------------------
 ifeq ($(OS), Windows_NT)
@@ -22,12 +23,13 @@ else
 		SRC_FILES = $(shell find $(ASSEMBLY) -type f \( -name "*.c" -o -name "*.m" \))
 		BUILD_PLATFORM = macos
 		EXTENSION = .dylib 
-		INCLUDE_FLAGS = -Iengine/src -I$(GLFW_SDK)/include
-		LINKER_FLAGS = -lvulkan -lglfw -L$(GLFW_SDK)/lib
+		INCLUDE_FLAGS = -Iengine/src -I$(GLFW_SDK)/include -L$(VULKAN_SDK)/include
+		LINKER_FLAGS = -lvulkan -lglfw -L$(GLFW_SDK)/lib -L$(VULKAN_SDK)/lib
 	endif
 endif
 
-build: 
+.PHONY: build
+build:build 
 	@echo "compiling $(ASSEMBLY) for $(BUILD_PLATFORM)"
 	@mkdir -p $(BUILD_DIR)
 	@clang $(SRC_FILES) $(DEFINES) -o $(BUILD_DIR)/lib$(ASSEMBLY)$(EXTENSION) $(LINKER_FLAGS) $(INCLUDE_FLAGS)

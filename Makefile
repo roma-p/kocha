@@ -1,4 +1,4 @@
-BUILD_DIR = bin
+BUILD_DIR = build
 ASSEMBLY  = testbed
 
 all: build-all run
