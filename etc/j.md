@@ -1,7 +1,8 @@
 # 28/12/22 -------------------------------------------------------------------
 
 ##vid14: 
--- EXTENSIONS ---------------
+
+-- EXTENSIONS --
 
 vulkan layers : validation mlayers, used for debugging. None by default. 
 extension and layers: const char**.  -> use of darray.
@@ -33,7 +34,7 @@ TODO:
     - forcing metal or macos surface -> -9
 
 
--- VALIDATION LAYERS ---------------
+-- VALIDATION LAYERS --
 
 - validation layer -> same data struct than extensions. 
 - but only to load in debug mode.
@@ -44,6 +45,22 @@ TODO:
     - VkLayerProperties pointer
 - VK_CHECK: macro to check VKResult : check for success; defines un vulkan_types.inl
     assert stuff! VK_CHECK no message? shall add one. 
+
+-- VULKAN DEBUGGER --
+-> to gather log from validation layers. 
+-> comes after creating instacnes.
+
+log severity debu:g VK_DEBUG_UTILS_SEVERITY_ERROR_BIT_EXT | -> error and warning only.
+create VkDebugutilsMessangerCreateInfoEXT -> info (same as instance, info first).
+                                            with some constant at declaration.
+
+to set: 
+    - severity 
+    - messageType
+    - callback for logging i guess: pfnUserCallback
+    - pUserData ?? -> 0 
+
+
 
 
 # 22/12/22 -------------------------------------------------------------------

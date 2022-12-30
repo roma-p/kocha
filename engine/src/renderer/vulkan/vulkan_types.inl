@@ -8,6 +8,11 @@
 typedef struct vulkan_context {
     VkInstance instance;
     VkAllocationCallbacks* allocator;
+
+#ifdef _DEBUG
+    VkDebugUtilsMessengerEXT debug_messenger;
+#endif
+
 } vulkan_context;
 
 //TODO: better implementation of this... (by reimplementing assert).
