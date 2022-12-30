@@ -6,6 +6,7 @@
 #include "renderer/vulkan/vulkan_backend.h"
 #include "renderer/vulkan/vulkan_types.inl"
 #include "renderer/vulkan/vulkan_platform.h"
+#include "renderer/vulkan/vulkan_device.h"
 
 static vulkan_context context;
 
@@ -147,12 +148,30 @@ b8 vulkan_renderer_backend_initialize(
 	LOG_INFO("vulkan debugger successfully instanciated");
     #endif
 
+    // SURFACE ---------------------------------------------------------------
+    LOG_DEBUG("creating vulkan surface");
+    if(!platform_create_vulkan_surface(plat_state, &context)){
+	LOG_ERROR("failed to create platform surface");
+	return FALSE;
+    }
+    LOG_INFO("vulkan surface initialized sucessfully.");
+
+
+    // DEVICE CREATION -------------------------------------------------------
+    LOG_DEBUG("creating device");
+    if(!vulkan_device_create(&context)) {
+	LOG_ERROR("failed to create vulkan device");
+	return FALSE;
+    }
     LOG_INFO("vulkan renderer initialized sucessfully.");
     return TRUE;
 }
 
 void vulkan_renderer_backend_shutdown(renderer_backend* backend){
     LOG_DEBUG("Destroying Vulkan debugger...");
+    
+    vulkan_device_destroy(&context);
+
     if (context.debug_messenger) {
         PFN_vkDestroyDebugUtilsMessengerEXT func =
             (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(

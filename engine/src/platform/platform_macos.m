@@ -26,6 +26,7 @@
 
 typedef struct internal_state {
     GLFWwindow* glfw_window;
+    VkSurfaceKHR surface;
 } internal_state;
 
 static f64 start_time = 0;
@@ -233,6 +234,15 @@ void platform_get_required_extension_names(const char*** names_darray) {
     }
 }
 
+b8 platform_create_vulkan_surface(platform_state* plat_state, vulkan_context* context){
+    internal_state* state = (internal_state*)plat_state->internal_state;
+    VkResult result = glfwCreateWindowSurface(context->instance, state->glfw_window, 0, &context->surface);
+    if (result != VK_SUCCESS) {
+        LOG_FATAL("Vulkan surface creation failed.");
+        return FALSE;
+    }
+    return TRUE;
+}
 // INPUT ----------------------------------------------------------------------
 
 static keys translate_key(int key) {
