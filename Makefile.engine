@@ -23,7 +23,7 @@ else
 		SRC_FILES = $(shell find $(ASSEMBLY) -type f \( -name "*.c" -o -name "*.m" \))
 		BUILD_PLATFORM = macos
 		EXTENSION = .dylib 
-		INCLUDE_FLAGS = -Iengine/src -I$(GLFW_SDK)/include -L$(VULKAN_SDK)/include
+		INCLUDE_FLAGS = -Iengine/src -I$(GLFW_SDK)/include -I$(VULKAN_SDK)/include
 		LINKER_FLAGS = -lvulkan -lglfw -L$(GLFW_SDK)/lib -L$(VULKAN_SDK)/lib
 	endif
 endif

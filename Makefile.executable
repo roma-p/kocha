@@ -8,7 +8,7 @@ GLFW_SDK = /opt/homebrew/Cellar/glfw/3.3.8
 VULKAN_SDK = /Users/romainpelle/VulkanSDK/1.3.231.1/macOS
 
 SRC_FILES = $(shell find $(ASSEMBLY) -name *.c)
-INCLUDE_FLAGS = -Iengine/src -I$(ASSEMBLY)/src -I$(GLFW_SDK)/include -L$(VULKAN_SDK)/include -L$(VULKAN_SDK)/include
+INCLUDE_FLAGS = -Iengine/src -I$(ASSEMBLY)/src -I$(GLFW_SDK)/include -L$(VULKAN_SDK)/include -I$(VULKAN_SDK)/include
 LINKER_FLAGS = -L./$(BUILD_DIR) $(ENGINE_LINK) -Wl,-rpath,. -L$(GLFW_SDK)/lib -lglfw  -lvulkan -L$(VULKAN_SDK)/lib
 
 #TODO: should not have to pass glfw here if I'm correct... (i don't need explicit vulkan so...)
