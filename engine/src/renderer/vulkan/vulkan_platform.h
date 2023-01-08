@@ -11,3 +11,4 @@ b8 platform_create_vulkan_surface(
 
 // definition in each platform implementation.
 void platform_get_required_extension_names(const char*** names_darray);
+

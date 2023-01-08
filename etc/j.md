@@ -1,3 +1,13 @@
+# 30/12/22 -------------------------------------------------------------------
+##vid15: 
+
+notes: 
+    - on lots of Vulkan func to get data: 
+        - a pointer to an array to receive the data
+        - a pointer to a number. 
+        - if poitner to an array is null: number will be set to data lenght.
+        - then reuse the same func with an array to get the desired amount of data.
+
 # 28/12/22 -------------------------------------------------------------------
 
 ##vid14: 
