@@ -12,10 +12,10 @@ typedef struct renderer_backend {
     u64 frame_number;
 
     b8 (*initialize)(
-	    struct renderer_backend* backend, // struct needed because forward declaration?
-	    const char* application_name,
-	    struct platform_state* plat_state
-	);
+        struct renderer_backend* backend, // struct needed because forward declaration?
+        const char* application_name,
+        struct platform_state* plat_state
+    );
     void (*shutdown)(struct renderer_backend* backend);
 
     void (*resized)(struct renderer_backend* backend, u16 width, u16 height);

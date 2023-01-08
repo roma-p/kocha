@@ -38,7 +38,7 @@ void input_shutdown() {
 
 void input_update(f64 delta_time) {
     if (!initialized){
-	return ;
+    return ;
     }
     kcopy_memory(&state.keyboard_previous, &state.keyboard_current, sizeof(keyboard_state));
     kcopy_memory(&state.mouse_previous, &state.mouse_current, sizeof(mouse_state));
@@ -47,7 +47,7 @@ void input_update(f64 delta_time) {
 void input_process_key(keys key, b8 pressed) {
     //only handle this if state actually changed.
     if (state.keyboard_current.keys[key] == pressed) {
-	return;
+    return;
     }
 
     //update internal state.
@@ -63,7 +63,7 @@ void input_process_key(keys key, b8 pressed) {
 
 void input_process_button(buttons button, b8 pressed) {
     if (state.mouse_current.buttons[button] == pressed) {
-	return;
+    return;
     }
     state.mouse_current.buttons[button] = pressed;
     event_context context;
@@ -73,7 +73,7 @@ void input_process_button(buttons button, b8 pressed) {
 
 void input_process_mouse_move(i16 x, i16 y){
     if (state.mouse_current.x == x && state.mouse_current.y == y) {
-	return;
+    return;
     }
 
     state.mouse_current.x = x;
@@ -90,7 +90,7 @@ void input_process_mouse_wheel(i8 z_delta){
 
     // FIRE EVENT ALL THE TIME? NO CONDITION LIKE THIS: 
     if (z_delta == 0) {
-	return;
+    return;
     }
     event_context context;
     context.data.u8[0] = z_delta;

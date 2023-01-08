@@ -46,7 +46,7 @@ void shutdown_memory() {
 
 void* kallocate(u64 size, memory_tag tag) {
     if(tag == MEMORY_TAG_UNKNOWN) {
-	LOG_WARN("kallocate called using MEMORY_TAG_UNKNOWN, re class this allocation");
+    LOG_WARN("kallocate called using MEMORY_TAG_UNKNOWN, re class this allocation");
     }
     stats.total_allocated += size;
     stats.tagged_allocations[tag] += size;
@@ -60,7 +60,7 @@ void* kallocate(u64 size, memory_tag tag) {
 
 void kfree(void* block, u64 size, memory_tag tag){
     if(tag == MEMORY_TAG_UNKNOWN) {
-	LOG_WARN("kfree called using MEMORY_TAG_UNKNOWN, re class this allocation");
+    LOG_WARN("kfree called using MEMORY_TAG_UNKNOWN, re class this allocation");
     }
     stats.total_allocated -= size;
     stats.tagged_allocations[tag] -= size;
@@ -88,33 +88,33 @@ char* get_memory_usage_str(){
     u64 offset = strlen(buffer);
 
     for(u32 i = 0; i < MEMORY_TAG_MAX_TAGS; i++) {
-	 char unit[4] = "XiB";
-	 float amount = 1.0f;
+     char unit[4] = "XiB";
+     float amount = 1.0f;
 
-	 if(stats.tagged_allocations[i] >= gib) {
-	     unit[0] = 'G';
-	     amount  = stats.tagged_allocations[i] / (float)gib;
-	 } else if(stats.tagged_allocations[i] >= mib) {
-	     unit[0] = 'M';
-	     amount  = stats.tagged_allocations[i] / (float)mib;
-	 } else if(stats.tagged_allocations[i] >= kib) {
-	     unit[0] = 'K';
-	     amount  = stats.tagged_allocations[i] / (float)kib;
-	 } else {
-	     unit[0] = 'B';
-	     unit[1] = 0;
-	     amount  = (float)stats.tagged_allocations[i];
-	 }
-	 i32 length = snprintf(
-	 	 buffer + offset, 8000,
-	 	 "  %s: %.2f%s\n",
-	 	 memory_type_string[i], amount, unit);
-	 offset += length;
-	 // pointer arithmetics : get a pointer of str that starts at char .... ???
-	 // ponter arithmetics to learn...
+     if(stats.tagged_allocations[i] >= gib) {
+         unit[0] = 'G';
+         amount  = stats.tagged_allocations[i] / (float)gib;
+     } else if(stats.tagged_allocations[i] >= mib) {
+         unit[0] = 'M';
+         amount  = stats.tagged_allocations[i] / (float)mib;
+     } else if(stats.tagged_allocations[i] >= kib) {
+         unit[0] = 'K';
+         amount  = stats.tagged_allocations[i] / (float)kib;
+     } else {
+         unit[0] = 'B';
+         unit[1] = 0;
+         amount  = (float)stats.tagged_allocations[i];
+     }
+     i32 length = snprintf(
+         buffer + offset, 8000,
+         "  %s: %.2f%s\n",
+         memory_type_string[i], amount, unit);
+     offset += length;
+     // pointer arithmetics : get a pointer of str that starts at char .... ???
+     // ponter arithmetics to learn...
     }
     char* out_string = string_duplicate(buffer); // _strdup malloc a string from the stack "buffer" str.
-						 // so when calling this func, need to free out_string after.
+                         // so when calling this func, need to free out_string after.
     return out_string;
 }
 

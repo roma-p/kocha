@@ -40,11 +40,11 @@ typedef struct vulkan_context {
 } vulkan_context;
 
 //TODO: better implementation of this... (by reimplementing assert).
-#define VK_CHECK(expr, message)						\
-    {									\
-	if(expr != VK_SUCCESS) {					\
-	    LOG_ERROR("VK process returned with result: %d", expr);	\
-	}								\
-	KASSERT_MSG(expr == VK_SUCCESS, message);			\
+#define VK_CHECK(expr, message)                     \
+    {                                   \
+    if(expr != VK_SUCCESS) {                    \
+        LOG_ERROR("VK process returned with result: %d", expr); \
+    }                               \
+    KASSERT_MSG(expr == VK_SUCCESS, message);           \
     }
 

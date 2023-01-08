@@ -17,9 +17,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
     void* user_data);
 
 b8 vulkan_renderer_backend_initialize(
-	    renderer_backend* backend,
-	    const char* application_name,
-	    struct platform_state* plat_state){
+        renderer_backend* backend,
+        const char* application_name,
+        struct platform_state* plat_state){
 
     // TODO: custom allocator ! 
     context.allocator = 0;
@@ -30,58 +30,58 @@ b8 vulkan_renderer_backend_initialize(
     platform_get_required_extension_names(&required_extensions);
 
     #if defined(_DEBUG)
-	darray_push(required_extensions, &VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    darray_push(required_extensions, &VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
-	LOG_DEBUG("Required vulkan extensions are:");
-	i32 i; i32 count = darray_length(required_extensions);
-	for(i=0; i<count; i++){
-	    LOG_DEBUG(" - %s", required_extensions[i]);
-	}
+    LOG_DEBUG("Required vulkan extensions are:");
+    i32 i; i32 count = darray_length(required_extensions);
+    for(i=0; i<count; i++){
+        LOG_DEBUG(" - %s", required_extensions[i]);
+    }
     #endif
 
     // VAlIDATION LAYERS -----------------------------------------------------
     const char** required_layers = 0;
     u32 required_layers_count    = 0;
     #if defined(_DEBUG)
-	required_layers = darray_create(const char*);
-	darray_push(required_layers, &"VK_LAYER_KHRONOS_validation");
-	required_layers_count = darray_length(required_layers);
+    required_layers = darray_create(const char*);
+    darray_push(required_layers, &"VK_LAYER_KHRONOS_validation");
+    required_layers_count = darray_length(required_layers);
 
-	u32 available_layer_count; VkResult vk_result;
+    u32 available_layer_count; VkResult vk_result;
 
-	vk_result = vkEnumerateInstanceLayerProperties(&available_layer_count, 0);
-	VK_CHECK(vk_result, "failed to list instance layer properties");
-	VkLayerProperties* available_layers = darray_reserve(available_layer_count, sizeof(VkLayerProperties));
-	vk_result = vkEnumerateInstanceLayerProperties(&available_layer_count, available_layers);
-	VK_CHECK(vk_result, "failed to list instance layer properties");
+    vk_result = vkEnumerateInstanceLayerProperties(&available_layer_count, 0);
+    VK_CHECK(vk_result, "failed to list instance layer properties");
+    VkLayerProperties* available_layers = darray_reserve(available_layer_count, sizeof(VkLayerProperties));
+    vk_result = vkEnumerateInstanceLayerProperties(&available_layer_count, available_layers);
+    VK_CHECK(vk_result, "failed to list instance layer properties");
 
-	int j; char *layer;
-	b8 layer_found; b8 all_layers_found = TRUE;
-	for(i=0; i<required_layers_count; i++) {
-	    const char * layer = required_layers[i];
-	    layer_found = FALSE;
-	    for(j=0; j<available_layer_count; j++){
-		if(strings_equal(layer, available_layers[j].layerName)){
-		    layer_found = TRUE;
-		    break;
-		}
-	    }
-	    if(!layer_found){
-		LOG_ERROR("Validation layer not available: %s", layer);
-		all_layers_found = FALSE;
-	    }
-	}
-	if(all_layers_found == FALSE){
-	    LOG_ERROR("Some validation layers are missing.");
-	    return FALSE;
-	}
+    int j; char *layer;
+    b8 layer_found; b8 all_layers_found = TRUE;
+    for(i=0; i<required_layers_count; i++) {
+        const char * layer = required_layers[i];
+        layer_found = FALSE;
+        for(j=0; j<available_layer_count; j++){
+        if(strings_equal(layer, available_layers[j].layerName)){
+            layer_found = TRUE;
+            break;
+        }
+        }
+        if(!layer_found){
+        LOG_ERROR("Validation layer not available: %s", layer);
+        all_layers_found = FALSE;
+        }
+    }
+    if(all_layers_found == FALSE){
+        LOG_ERROR("Some validation layers are missing.");
+        return FALSE;
+    }
 
-	LOG_DEBUG("Required vulkan validation layers are:");
-	for(i=0; i<required_layers_count; i++){
-	    LOG_DEBUG(" - %s", required_layers[i]);
-	}
+    LOG_DEBUG("Required vulkan validation layers are:");
+    for(i=0; i<required_layers_count; i++){
+        LOG_DEBUG(" - %s", required_layers[i]);
+    }
 
-    #endif	
+    #endif  
 
     // APP INFO --------------------------------------------------------------
     VkApplicationInfo app_info  = {VK_STRUCTURE_TYPE_APPLICATION_INFO};
@@ -114,45 +114,45 @@ b8 vulkan_renderer_backend_initialize(
 
     #if defined(_DEBUG)
 
-	u32 severity_level = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | \
-			     VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-	u32 message_types  = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | \
-			     VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | \
-			     VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	VkDebugUtilsMessengerCreateInfoEXT debug_info = {VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
-	// debug_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	debug_info.messageSeverity = severity_level;
-	debug_info.messageType     = message_types;
-	debug_info.pfnUserCallback = vk_debug_callback;
-	// debug_info.pUserData       = 0;
-	
-	// some vk extension not loaded automatically, so we need to call a vulkan API to set 
-	// a func pointer defined by us to point to the desired extension API.
-	
-	PFN_vkCreateDebugUtilsMessengerEXT func =
-	    (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-		    context.instance,
-		    "vkCreateDebugUtilsMessengerEXT"
-		);
-	const char * vulkan_debug_mess_error =  "error creating vulkan debugger messenger";
-	KASSERT_MSG(func, vulkan_debug_mess_error);
-	VK_CHECK(
-	    func(
-		context.instance,
-		&debug_info,
-		context.allocator,
-		&context.debug_messenger
-	    ),
-	    vulkan_debug_mess_error
-	);
-	LOG_INFO("vulkan debugger successfully instanciated");
+    u32 severity_level = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | \
+                 VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+    u32 message_types  = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | \
+                 VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | \
+                 VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    VkDebugUtilsMessengerCreateInfoEXT debug_info = {VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
+    // debug_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    debug_info.messageSeverity = severity_level;
+    debug_info.messageType     = message_types;
+    debug_info.pfnUserCallback = vk_debug_callback;
+    // debug_info.pUserData       = 0;
+    
+    // some vk extension not loaded automatically, so we need to call a vulkan API to set 
+    // a func pointer defined by us to point to the desired extension API.
+    
+    PFN_vkCreateDebugUtilsMessengerEXT func =
+        (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+            context.instance,
+            "vkCreateDebugUtilsMessengerEXT"
+        );
+    const char * vulkan_debug_mess_error =  "error creating vulkan debugger messenger";
+    KASSERT_MSG(func, vulkan_debug_mess_error);
+    VK_CHECK(
+        func(
+        context.instance,
+        &debug_info,
+        context.allocator,
+        &context.debug_messenger
+        ),
+        vulkan_debug_mess_error
+    );
+    LOG_INFO("vulkan debugger successfully instanciated");
     #endif
 
     // SURFACE ---------------------------------------------------------------
     LOG_DEBUG("creating vulkan surface");
     if(!platform_create_vulkan_surface(plat_state, &context)){
-	LOG_ERROR("failed to create platform surface");
-	return FALSE;
+    LOG_ERROR("failed to create platform surface");
+    return FALSE;
     }
     LOG_INFO("vulkan surface initialized sucessfully.");
 
@@ -160,8 +160,8 @@ b8 vulkan_renderer_backend_initialize(
     // DEVICE CREATION -------------------------------------------------------
     LOG_DEBUG("creating device");
     if(!vulkan_device_create(&context)) {
-	LOG_ERROR("failed to create vulkan device");
-	return FALSE;
+    LOG_ERROR("failed to create vulkan device");
+    return FALSE;
     }
     LOG_INFO("vulkan renderer initialized sucessfully.");
     return TRUE;
@@ -175,9 +175,9 @@ void vulkan_renderer_backend_shutdown(renderer_backend* backend){
     if (context.debug_messenger) {
         PFN_vkDestroyDebugUtilsMessengerEXT func =
             (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-		    context.instance,
-		    "vkDestroyDebugUtilsMessengerEXT"
-	    );
+            context.instance,
+            "vkDestroyDebugUtilsMessengerEXT"
+        );
         func(context.instance, context.debug_messenger, context.allocator);
     }
     LOG_DEBUG("Destroying Vulkan instance...");

@@ -25,7 +25,7 @@ static event_system_state state;
 
 b8 event_initialize() {
     if(is_initialized == TRUE) {
-	return FALSE;
+    return FALSE;
     }
     is_initialized = FALSE;
     kzero_memory(&state, sizeof(state));
@@ -35,10 +35,10 @@ b8 event_initialize() {
 
 void event_shutdown() {
     for(u16 i = 0; i <MAX_MESSAGE_CODES; ++i) {
-	if(state.registered[i].events != 0){
-	    darray_destroy(state.registered[i].events);
-	    state.registered[i].events = 0;
-	}
+    if(state.registered[i].events != 0){
+        darray_destroy(state.registered[i].events);
+        state.registered[i].events = 0;
+    }
     }
 }
 

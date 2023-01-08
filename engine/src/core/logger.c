@@ -17,12 +17,12 @@ void log_stop(){
 
 void log_output(log_level level, const char* message, ...){
     const char * level_strings[6] = {
-	"[FATAL]: ",
-	"[ERROR]: ",
-	"[WARN]:  ", 
-	"[INFO]:  ", 
-	"[DEBUG]: ", 
-	"[TRACE]: ", 
+    "[FATAL]: ",
+    "[ERROR]: ",
+    "[WARN]:  ", 
+    "[INFO]:  ", 
+    "[DEBUG]: ", 
+    "[TRACE]: ", 
     }; 
 
     const i32 msg_length = 32000;
@@ -41,9 +41,9 @@ void log_output(log_level level, const char* message, ...){
     sprintf(out_message, "%s%s\n", level_strings[level], out_message_tmp);
     
     if (is_error) {
-	platform_console_write_error(out_message, level);
+    platform_console_write_error(out_message, level);
     } else {
-	platform_console_write(out_message, level);
+    platform_console_write(out_message, level);
     }
 }
 

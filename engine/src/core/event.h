@@ -5,21 +5,21 @@ typedef struct event_context {
 
     // 128 bytes
     union {
-	i64 i64[2];
-	u64 u64[2];
-	f64 f64[2];
+    i64 i64[2];
+    u64 u64[2];
+    f64 f64[2];
 
-	i32 i34[4];
-	u32 u34[4];
-	f32 f34[4];
+    i32 i34[4];
+    u32 u34[4];
+    f32 f34[4];
 
-	i16 i16[8];
-	u16 u16[8];
+    i16 i16[8];
+    u16 u16[8];
 
-	i8 i8[16];
-	u8 u8[16];
+    i8 i8[16];
+    u8 u8[16];
 
-	char c[16];
+    char c[16];
     } data;
 
 } event_context;
@@ -43,6 +43,6 @@ typedef enum system_event_code {
     EVENT_CODE_BUTTON_RELEASED  = 0x05,
     EVENT_CODE_MOUSE_MOVED      = 0x06,
     EVENT_CODE_MOUSE_WHEEL      = 0x07,
-    EVENT_CODE_RESIZED    		= 0x08,
+    EVENT_CODE_RESIZED          = 0x08,
     MAX_EVENT_CODE              = 0xFF,
 }system_event_code;

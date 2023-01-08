@@ -46,12 +46,12 @@ static keys translate_key(int key);
 // PLATFORM STARTUP / SHUTDOWN -----------------------------------------------
 
 b8 platform_startup(
-	platform_state* platform_state,
-	const char* application_name,
-	i32 x,
-	i32 y, 
-	i32 width,
-	i32 height) {
+    platform_state* platform_state,
+    const char* application_name,
+    i32 x,
+    i32 y, 
+    i32 width,
+    i32 height) {
 
     //??? 
     platform_state->internal_state = malloc(sizeof(internal_state));
@@ -69,9 +69,9 @@ b8 platform_startup(
 
     state->glfw_window = glfwCreateWindow(width, height, application_name, 0, 0);
     if (!state->glfw_window) {
-	LOG_FATAL("Failed to create a window");
-	glfwTerminate();
-	return FALSE;
+    LOG_FATAL("Failed to create a window");
+    glfwTerminate();
+    return FALSE;
     }
 
     glfwSetKeyCallback(state->glfw_window, platform_key_callback);

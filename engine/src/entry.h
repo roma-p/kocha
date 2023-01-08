@@ -14,25 +14,25 @@ int main(void) {
 
     game game_inst;
     if(!create_game(&game_inst)){
-	LOG_FATAL("Could not create game.");
-	return -1;
+    LOG_FATAL("Could not create game.");
+    return -1;
     }
 
     if(!game_inst.render || !game_inst.update || !game_inst.initialize || !game_inst.on_resize) {
-	LOG_FATAL("Some of game instance function not assigned");
-	return -2;
+    LOG_FATAL("Some of game instance function not assigned");
+    return -2;
     }
 
     // INIT 
     if(!application_create(&game_inst)){
-	LOG_INFO("Application failed to create.");
-	return 1;
+    LOG_INFO("Application failed to create.");
+    return 1;
     }
 
     // BEGIN GAME LOOP.
     if(!application_run()) {
-	LOG_INFO("Application did not shutdown successfully");
-	return 2;
+    LOG_INFO("Application did not shutdown successfully");
+    return 2;
     }
 
     shutdown_memory();
