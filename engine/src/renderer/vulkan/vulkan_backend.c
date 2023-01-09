@@ -7,6 +7,7 @@
 #include "renderer/vulkan/vulkan_types.inl"
 #include "renderer/vulkan/vulkan_platform.h"
 #include "renderer/vulkan/vulkan_device.h"
+#include "renderer/vulkan/vulkan_swapchain.h"
 
 static vulkan_context context;
 
@@ -16,10 +17,14 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
     const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
     void* user_data);
 
+i32 find_memory_index (u32 type_filter, u32 property_flags);
+
 b8 vulkan_renderer_backend_initialize(
         renderer_backend* backend,
         const char* application_name,
         struct platform_state* plat_state){
+
+    context.find_memory_index = find_memory_index;
 
     // TODO: custom allocator ! 
     context.allocator = 0;
@@ -151,8 +156,8 @@ b8 vulkan_renderer_backend_initialize(
     // SURFACE ---------------------------------------------------------------
     LOG_DEBUG("creating vulkan surface");
     if(!platform_create_vulkan_surface(plat_state, &context)){
-    LOG_ERROR("failed to create platform surface");
-    return FALSE;
+        LOG_ERROR("failed to create platform surface");
+        return FALSE;
     }
     LOG_INFO("vulkan surface initialized sucessfully.");
 
@@ -160,17 +165,39 @@ b8 vulkan_renderer_backend_initialize(
     // DEVICE CREATION -------------------------------------------------------
     LOG_DEBUG("creating device");
     if(!vulkan_device_create(&context)) {
-    LOG_ERROR("failed to create vulkan device");
-    return FALSE;
+        LOG_ERROR("failed to create vulkan device");
+        return FALSE;
     }
+
+    // SWAPCHAIN CREATION ----------------------------------------------------
+    LOG_DEBUG("creating swapchain");
+    vulkan_swapchain_create(
+            &context,
+            context.framebuffer_width,
+            context.framebuffer_height,
+            &context.swapchain
+        );
+
     LOG_INFO("vulkan renderer initialized sucessfully.");
     return TRUE;
 }
 
 void vulkan_renderer_backend_shutdown(renderer_backend* backend){
-    LOG_DEBUG("Destroying Vulkan debugger...");
-    
+    LOG_DEBUG("Destroying Vulkan swapchain...");
+    vulkan_swapchain_destroy(&context, &context.swapchain);
+
+    LOG_DEBUG("Destroying Vulkan device...")
     vulkan_device_destroy(&context);
+
+    LOG_DEBUG("Destroying Vulkan surface...")
+    if(context.surface) {
+        vkDestroySurfaceKHR(
+                context.instance,
+                context.surface,
+                context.allocator
+            );
+        context.surface = 0;
+    }
 
     if (context.debug_messenger) {
         PFN_vkDestroyDebugUtilsMessengerEXT func =
@@ -219,3 +246,15 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
     return VK_FALSE;
 }
 
+// ???
+i32 find_memory_index(u32 type_filter, u32 property_flags) {
+    VkPhysicalDeviceMemoryProperties memory_properties;    
+    vkGetPhysicalDeviceMemoryProperties(context.device.physical_device, &memory_properties);
+    for(i32 i = 0; i<memory_properties.memoryTypeCount; i++) {
+        if(type_filter & (1 <<i ) && (memory_properties.memoryTypes[i].propertyFlags & property_flags) == property_flags) {
+            return i;
+        }
+    }
+    LOG_WARN("unable to find the sutable memory type!");
+    return -1;
+}
