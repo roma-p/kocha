@@ -21,4 +21,3 @@ void vulkan_image_view_create(
 	VkImageAspectFlags aspect_flags);
 
 void vulkan_image_destroy(vulkan_context* context, vulkan_image* image);
-
