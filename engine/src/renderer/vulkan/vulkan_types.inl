@@ -43,6 +43,25 @@ typedef struct vulkan_image {
     u32 height;
 } vulkan_image;
 
+// TODO : change this dangerous enum valus to more specific... K_RENDERPASS_READY
+typedef enum vulkan_renderpass_state {
+    READY,
+    RECORDING,
+    IN_RENDER_PASS,
+    RECORDING_ENDED,
+    SUBMITTED,
+    NOT_ALLOCATED,
+}vulkan_renderpass_state;
+
+typedef struct vulkan_renderpass {
+    VkRenderPass handle;
+    f32 x, y, w, h;
+    f32 r, g, b, a;
+    f32 depth;
+    u32 stencil;
+    vulkan_renderpass_state state;
+}vulkan_renderpass;
+
 typedef struct vulkan_swapchain {
     VkSurfaceFormatKHR image_format;
     u8 max_frames_in_flight;
@@ -52,6 +71,21 @@ typedef struct vulkan_swapchain {
     VkImageView* views;
     vulkan_image depth_attachment;
 } vulkan_swapchain;
+
+typedef enum vulkan_command_buffer_state {
+    K_COMMAND_BUFFER_STATE_READY,
+    K_COMMAND_BUFFER_STATE_RECORDING,
+    K_COMMAND_BUFFER_STATE_IN_RENDER_PASS,
+    K_COMMAND_BUFFER_STATE_RECORDING_ENDED,
+    K_COMMAND_BUFFER_STATE_SUBMITTED,
+    K_COMMAND_BUFFER_STATE_NOT_ALLOCATED,
+}vulkan_command_buffer_state;
+
+typedef struct vulkan_command_buffer {
+    VkCommandBuffer handle;
+
+    vulkan_command_buffer_state state;
+}vulkan_command_buffer;
 
 typedef struct vulkan_context {
     // frame buffer current width and height
@@ -66,6 +100,7 @@ typedef struct vulkan_context {
 #endif
     vulkan_device device;
     vulkan_swapchain swapchain;
+    vulkan_renderpass main_renderpass;
 
     u32 image_index;
     u32 current_frame;
