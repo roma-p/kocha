@@ -189,3 +189,8 @@ b8 application_on_key(u16 code, void* sender, void* listener_inst, event_context
     }
     return FALSE;
 }
+
+void application_get_framebuffer_size(u32* width, u32* height){
+    *width = app_state.width;
+    *height = app_state.height;
+}

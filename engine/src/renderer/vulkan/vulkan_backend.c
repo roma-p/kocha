@@ -4,6 +4,9 @@
 #include "core/kstring.h"
 #include "core/kmemory.h"
 #include "containers/darray.h"
+
+#include "core/application.h"
+
 #include "renderer/vulkan/vulkan_backend.h"
 #include "renderer/vulkan/vulkan_types.inl"
 #include "renderer/vulkan/vulkan_platform.h"
@@ -11,8 +14,11 @@
 #include "renderer/vulkan/vulkan_swapchain.h"
 #include "renderer/vulkan/vulkan_renderpass.h"
 #include "renderer/vulkan/vulkan_command_buffer.h"
+#include "renderer/vulkan/vulkan_framebuffer.h"
 
 static vulkan_context context;
+static u32 cached_framebuffer_width  = 0;
+static u32 cached_framebuffer_height = 0;
 
 VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
     VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
@@ -23,6 +29,11 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
 i32 find_memory_index (u32 type_filter, u32 property_flags);
 
 void create_command_buffers(renderer_backend* backend);
+void regenerate_frame_buffers(
+    renderer_backend* backend,
+    vulkan_swapchain* swapchain,
+    vulkan_renderpass* renderpass
+);
 
 b8 vulkan_renderer_backend_initialize(
         renderer_backend* backend,
@@ -33,6 +44,15 @@ b8 vulkan_renderer_backend_initialize(
 
     // TODO: custom allocator ! 
     context.allocator = 0;
+
+    application_get_framebuffer_size(
+            &cached_framebuffer_width,
+            &cached_framebuffer_height
+        );
+    context.framebuffer_width  = (cached_framebuffer_width != 0)  ? cached_framebuffer_width  : 800;
+    context.framebuffer_height = (cached_framebuffer_height != 0) ? cached_framebuffer_height : 600;
+    cached_framebuffer_width  = 0;
+    cached_framebuffer_height = 0;
 
     // EXTENSIONS ------------------------------------------------------------
     const char** required_extensions = darray_create(const char*);
@@ -193,6 +213,14 @@ b8 vulkan_renderer_backend_initialize(
             1.0f,
             0);
 
+
+    // FRAME BUFFER CREATION -------------------------------------------------
+    context.swapchain.framebuffers = darray_reserve(
+            vulkan_framebuffer,
+            context.swapchain.image_count
+        );
+    regenerate_frame_buffers(backend, &context.swapchain, &context.main_renderpass);
+
     // COMMAND BUFFER CREATION -----------------------------------------------
     LOG_DEBUG("creating command buffers");
     create_command_buffers(backend);
@@ -202,7 +230,11 @@ b8 vulkan_renderer_backend_initialize(
 }
 
 void vulkan_renderer_backend_shutdown(renderer_backend* backend){
-
+    LOG_DEBUG("Destroying Vulkan frame buffers...");
+    for(u32 i = 0; i<context.swapchain.image_count; i++){
+        vulkan_framebuffer_destroy(&context, &context.swapchain.framebuffers[i]);
+    }
+    
     LOG_DEBUG("Destroying Vulkan command buffers...");
     for(u32 i = 0; i<context.swapchain.image_count; i++){
         if(context.graphics_command_buffers[i].handle) {
@@ -323,3 +355,30 @@ void create_command_buffers(renderer_backend* backend) {
             );
     }
 }
+
+void regenerate_frame_buffers(
+        renderer_backend* backend,
+        vulkan_swapchain* swapchain,
+        vulkan_renderpass* renderpass){
+    // creating a frame buffer for each swpachain image. 
+    for(u32 i = 0 ; i < swapchain->image_count; ++i){
+        // make this editable.
+        u32 attachment_count = 2;
+        VkImageView attachments[] = {
+            swapchain->views[i],
+            swapchain->depth_attachment.view
+        };
+
+        vulkan_framebuffer_create(
+                &context,
+                renderpass,
+                context.framebuffer_width,
+                context.framebuffer_height,
+                attachment_count,
+                attachments,
+                &context.swapchain.framebuffers[i]
+            );
+    }
+    
+}
+

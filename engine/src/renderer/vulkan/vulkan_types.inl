@@ -79,6 +79,8 @@ typedef struct vulkan_swapchain {
     VkImage* images;
     VkImageView* views;
     vulkan_image depth_attachment;
+    // framebuffer ued for on screen rendering.
+    vulkan_framebuffer* framebuffers;
 } vulkan_swapchain;
 
 typedef enum vulkan_command_buffer_state {
