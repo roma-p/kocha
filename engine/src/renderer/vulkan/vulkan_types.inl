@@ -98,6 +98,11 @@ typedef struct vulkan_command_buffer {
     vulkan_command_buffer_state state;
 }vulkan_command_buffer;
 
+typedef struct vulkan_fence {
+    VkFence handle;
+    b8 is_signaled; // set to True when fence is signaled because operation is completed.
+}vulkan_fence;
+
 typedef struct vulkan_context {
     // frame buffer current width and height
     u32 framebuffer_width;
@@ -115,6 +120,19 @@ typedef struct vulkan_context {
 
     //darray
     vulkan_command_buffer* graphics_command_buffers;
+
+    // nota: semaphores: GPU to GPU // fences GPU to application
+
+    //darray image is done beeing present to screen and ready to render again.
+    VkSemaphore* image_available_semaphore;
+
+    //darray image have been run by a queue and rdy to be presented
+    VkSemaphore* queue_complete_semaphore;
+    // ???
+    u32 in_flight_fence_count;
+    vulkan_fence* in_flight_fences;
+
+    vulkan_fence** image_in_flight;
 
     u32 image_index;
     u32 current_frame;

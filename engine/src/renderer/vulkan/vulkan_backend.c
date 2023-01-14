@@ -15,6 +15,7 @@
 #include "renderer/vulkan/vulkan_renderpass.h"
 #include "renderer/vulkan/vulkan_command_buffer.h"
 #include "renderer/vulkan/vulkan_framebuffer.h"
+#include "renderer/vulkan/vulkan_fence.h"
 
 static vulkan_context context;
 static u32 cached_framebuffer_width  = 0;
@@ -91,10 +92,10 @@ b8 vulkan_renderer_backend_initialize(
         const char * layer = required_layers[i];
         layer_found = FALSE;
         for(j=0; j<available_layer_count; j++){
-        if(strings_equal(layer, available_layers[j].layerName)){
-            layer_found = TRUE;
-            break;
-        }
+            if(strings_equal(layer, available_layers[j].layerName)){
+                layer_found = TRUE;
+                break;
+            }
         }
         if(!layer_found){
         LOG_ERROR("Validation layer not available: %s", layer);
@@ -225,11 +226,80 @@ b8 vulkan_renderer_backend_initialize(
     LOG_DEBUG("creating command buffers");
     create_command_buffers(backend);
 
+    // SYNC OBJECTS CREATION -------------------------------------------------
+    LOG_DEBUG("creating sync objects");
+    context.image_available_semaphore = darray_reserve(
+            VkSemaphore,
+            context.swapchain.max_frames_in_flight
+        );
+    context.queue_complete_semaphore = darray_reserve(
+            VkSemaphore,
+            context.swapchain.max_frames_in_flight
+        );
+    context.in_flight_fences = darray_reserve(
+            vulkan_fence,
+            context.swapchain.max_frames_in_flight
+        );
+    for(u8 i = 0; i<context.swapchain.max_frames_in_flight; i++ ){
+        VkSemaphoreCreateInfo semaphore_create_info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+        vkCreateSemaphore(
+                context.device.logical_device, 
+                &semaphore_create_info,
+                context.allocator,
+                &context.image_available_semaphore[i]
+            );
+        // first image can't be rendered (for some reason?)
+        // so tagging semaphore as "signaled".
+        vulkan_fence_create(&context, TRUE, &context.in_flight_fences[i]);
+    }
+
+    context.image_in_flight = darray_reserve(
+            vulkan_fence,
+            context.swapchain.image_count
+        );
+    // Not image in flight at start of engine, so forcing 0 in this pointer array
+    // a zero pointer means that the image at this index is not in flight.
+    for(u32 i =0; i< context.swapchain.image_count; ++i) {
+        context.image_in_flight[i] = 0;
+    }
+
     LOG_INFO("vulkan renderer initialized sucessfully.");
     return TRUE;
 }
 
 void vulkan_renderer_backend_shutdown(renderer_backend* backend){
+    LOG_DEBUG("Destroying Vulkan sync objects...");
+
+    // waiting no more graphics operations
+    vkDeviceWaitIdle(context.device.logical_device);
+    for(u8 i = 0; i < context.swapchain.max_frames_in_flight; ++i) {
+        if (context.image_available_semaphore[i]) {
+            vkDestroySemaphore(
+                    context.device.logical_device,
+                    context.image_available_semaphore[i],
+                    context.allocator
+                );
+            context.image_available_semaphore[i] = 0;
+        }
+        if (context.queue_complete_semaphore[i]) {
+            vkDestroySemaphore(
+                    context.device.logical_device,
+                    context.queue_complete_semaphore[i],
+                    context.allocator
+                );
+            context.queue_complete_semaphore[i] = 0;
+        }
+        vulkan_fence_destroy(&context, &context.in_flight_fences[i]);
+    }
+    darray_destroy(context.image_available_semaphore);
+    context.image_available_semaphore = 0;
+
+    darray_destroy(context.queue_complete_semaphore);
+    context.queue_complete_semaphore = 0;
+
+    darray_destroy(context.in_flight_fences);
+    context.in_flight_fences = 0;
+
     LOG_DEBUG("Destroying Vulkan frame buffers...");
     for(u32 i = 0; i<context.swapchain.image_count; i++){
         vulkan_framebuffer_destroy(&context, &context.swapchain.framebuffers[i]);
