@@ -295,6 +295,9 @@ void create(
 }
 
 void destroy(vulkan_context* context, vulkan_swapchain* swapchain) {
+
+    vkDeviceWaitIdle(context->device.logical_device);
+
     // destroy depth buffer
     vulkan_image_destroy(context, &swapchain->depth_attachment);
 

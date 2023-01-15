@@ -8,7 +8,7 @@ void vulkan_swapchain_create(
     u32 height,
     vulkan_swapchain* out_swapchain);
 
-void vulkan_swapchain_re_create(
+void vulkan_swapchain_recreate(
     vulkan_context *context,
     u32 width,
     u32 height,
