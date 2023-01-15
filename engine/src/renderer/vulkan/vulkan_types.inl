@@ -108,6 +108,14 @@ typedef struct vulkan_context {
     u32 framebuffer_width;
     u32 framebuffer_height;
 
+    // current generation of framebuffer size. if it does not match
+    // framebuffer_size_last_generation, then a new one shall be created.
+    u64 framebuffer_size_generation;
+
+    // the generation of the framebuffer when it was last created. 
+    // Set to framebuffer_size_generation when updated.
+    u64 framebuffer_size_last_generation;
+
     VkInstance instance;
     VkAllocationCallbacks* allocator;
     VkSurfaceKHR surface;
