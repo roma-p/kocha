@@ -2,34 +2,36 @@
 #include "core/kmemory.h"
 
 void vulkan_renderpass_create(
-    vulkan_context* context,
-    vulkan_renderpass* out_renderpass,
-    f32 x, f32 y, f32 w, f32 h,
-    f32 r, f32 g, f32 b, f32 a,
-    f32 depth,
-    u32 stencil) {
+        vulkan_context* context,
+        vulkan_renderpass* out_renderpass,
+        f32 x, f32 y, f32 w, f32 h,
+        f32 r, f32 g, f32 b, f32 a,
+        f32 depth,
+        u32 stencil) {
 
-out_renderpass->x = x;
-out_renderpass->y = y;
-out_renderpass->w = w;
-out_renderpass->h = h;
+    out_renderpass->x = x;
+    out_renderpass->y = y;
+    out_renderpass->w = w;
+    out_renderpass->h = h;
 
-out_renderpass->r = r;
-out_renderpass->g = g;
-out_renderpass->b = b;
-out_renderpass->a = a;
+    out_renderpass->r = r;
+    out_renderpass->g = g;
+    out_renderpass->b = b;
+    out_renderpass->a = a;
 
-out_renderpass->depth = depth;
-out_renderpass->stencil = stencil;
+    out_renderpass->depth = depth;
+    out_renderpass->stencil = stencil;
 
-
+    // Main subpass
     VkSubpassDescription subpass = {};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+
     // binding this render pass to graphics pipeline
     // TODO: make this configurable.
     u32 attachment_description_count = 2;
     VkAttachmentDescription attachment_description[attachment_description_count];
 
+    // Color attachment
     VkAttachmentDescription color_attachment;
     color_attachment.format = context->swapchain.image_format.format; //TODO make config.
     color_attachment.samples = VK_SAMPLE_COUNT_1_BIT; // a single sample
@@ -43,8 +45,10 @@ out_renderpass->stencil = stencil;
     // CLEAR -> we clear what is on the actual render pass area and start form scratch
     // DONT_CARE -> we do nothing whatever the state of the memory is.
     // same goes for StoreOP
+
     color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    color_attachment.flags = 0;
 
     attachment_description[0] = color_attachment;
 
@@ -117,8 +121,6 @@ out_renderpass->stencil = stencil;
     ),
       "error creating renderpass");
 
-    VkRenderPassCreateInfo create_info = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
-
 }
 
 void vulkan_renderpass_destroy(
@@ -145,8 +147,10 @@ void vulkan_renderpass_begin(
     begin_info.framebuffer = frame_buffer;
     begin_info.renderArea.offset.x = renderpass->x;
     begin_info.renderArea.offset.y = renderpass->y;
-    begin_info.renderArea.extent.width = renderpass->w;
-    begin_info.renderArea.extent.height = renderpass->h;
+    begin_info.renderArea.extent.width = renderpass->w - 1;
+    begin_info.renderArea.extent.height = (i32)renderpass->h - 1;
+
+    LOG_TRACE("render pass extent : %f x %f", renderpass->w, renderpass->h);
 
     VkClearValue clear_values[2];
     kzero_memory(clear_values, sizeof(VkClearColorValue) * 2);

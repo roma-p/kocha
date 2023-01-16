@@ -213,7 +213,7 @@ b8 vulkan_renderer_backend_initialize(
             &context,
             &context.main_renderpass,
             0, 0, context.framebuffer_width, context.framebuffer_height,
-            0.0f, 0.0f, 0.2f, 1.0f,
+            0.0f, 0.3f, 0.2f, 1.0f,
             1.0f,
             0);
 
@@ -454,6 +454,12 @@ b8 vulkan_renderer_backend_begin_frame(renderer_backend* backend, f32 delta_time
 
     context.main_renderpass.w = context.framebuffer_width;
     context.main_renderpass.h = context.framebuffer_height;
+    //context.main_renderpass.w = 50;
+    //context.main_renderpass.h = 50;
+
+    LOG_TRACE("//");
+    LOG_TRACE("context frame buffer : %u x %u", context.framebuffer_width, context.framebuffer_height);
+    LOG_TRACE("context frame buffer : %f x %f", context.main_renderpass.w, context.main_renderpass.h);
 
     //Begin the render pass
     vulkan_renderpass_begin(

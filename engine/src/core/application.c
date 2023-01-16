@@ -200,7 +200,7 @@ void application_get_framebuffer_size(u32* width, u32* height){
 b8 application_on_resized(u16 code, void* sender, void* listener_inst, event_context context) {
     if (code == EVENT_CODE_RESIZED) {
         u16 width  = context.data.u16[0];
-        u16 height = context.data.u16[0];
+        u16 height = context.data.u16[1];
 
         if (width != app_state.width || height != app_state.height){
 

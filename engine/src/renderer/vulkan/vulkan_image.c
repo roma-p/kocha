@@ -32,6 +32,7 @@ void vulkan_image_create(
     image_create_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     image_create_info.usage = usage;
     image_create_info.samples = VK_SAMPLE_COUNT_1_BIT; // TODO configurable.
+    image_create_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE; // TODO configurable.
 
     VK_CHECK(
             vkCreateImage(
