@@ -6,6 +6,11 @@
 #include <vulkan/vulkan.h>
 
 typedef struct vulkan_swapchain_support_info{
+    /*
+    what the physical device support in terms of swapchain.
+    created when choosing GPU / instantiating physical device.
+    used for swapchain creation.
+    */
     VkSurfaceCapabilitiesKHR capabilities;
     u32 format_count;
     VkSurfaceFormatKHR* formats;
@@ -65,6 +70,13 @@ typedef struct vulkan_renderpass {
 }vulkan_renderpass;
 
 typedef struct vulkan_framebuffer{
+    /*
+    a frame buffer is needed for a renderpass to render to a swapchain image.
+    render pass does not work directly with imageView but with a frame buffer.
+    One frame buffer for each swapchain image ! 
+    Attachment: [0] -> view of a swpachain image.
+    Attachment: [1] -> view of swpachain depth.
+    */
     VkFramebuffer handle;
     u32 attachment_count;
     VkImageView* attachments;
@@ -73,7 +85,7 @@ typedef struct vulkan_framebuffer{
 
 typedef struct vulkan_swapchain {
     VkSurfaceFormatKHR image_format;
-    u8 max_frames_in_flight;
+    u8 max_frames_in_flight; // ?? max image frames begin processed at the same time.
     VkSwapchainKHR handle;
     u32 image_count;
     VkImage* images;
@@ -93,8 +105,14 @@ typedef enum vulkan_command_buffer_state {
 }vulkan_command_buffer_state;
 
 typedef struct vulkan_command_buffer {
+    /*
+     a command buffer is a set a vulkan CMD that will be processed by a queue
+     usage is:
+        - creating it alongside a swapchain
+     there are allocated
+     a command buffer is created for each image of the swapchain. 
+    */
     VkCommandBuffer handle;
-
     vulkan_command_buffer_state state;
 }vulkan_command_buffer;
 
@@ -126,30 +144,32 @@ typedef struct vulkan_context {
     vulkan_swapchain swapchain;
     vulkan_renderpass main_renderpass;
 
-    //darray
+    //darray of len equal to number of queue handled. 
     vulkan_command_buffer* graphics_command_buffers;
 
-    // nota: semaphores: GPU to GPU // fences GPU to application
+
+    // sync objects ----------------------------------------------------------
+    // three darrays of len equal to context.swapchain.max_image_in_flight
+    // nb: semaphores: GPU to GPU // fences GPU to application
 
     //darray image is done beeing present to screen and ready to render again.
     VkSemaphore* image_available_semaphore;
 
     //darray image have been run by a queue and rdy to be presented
     VkSemaphore* queue_complete_semaphore;
+
     // ???
     u32 in_flight_fence_count;
     vulkan_fence* in_flight_fences;
 
-    vulkan_fence** image_in_flight;
+    vulkan_fence** image_in_flight; // index of pointer to image in flight in the swapchain.
 
-    u32 image_index;
-    u32 current_frame;
+    u32 image_index;   // the image to process on this cycle, acquire from swapchain.
+    u32 current_frame; // current image beeing rendered? processed by some queue?
 
     b8 recreating_swapchain;
 
     i32 (*find_memory_index)(u32 type_filter, u32 property_flags);
-
-
 } vulkan_context;
 
 //TODO: better implementation of this... (by reimplementing assert).

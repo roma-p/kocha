@@ -68,7 +68,7 @@ b8 vulkan_swapchain_acquire_next_image_index(
 void vulkan_swapchain_present(
         vulkan_context *context,
         vulkan_swapchain* swapchain,
-        VkQueue graphics_queue,
+        VkQueue graphics_queue, // not used?
         VkQueue present_queue,
         VkSemaphore render_complete_semaphore,
         u32 present_image_index){
@@ -104,6 +104,7 @@ void create(
         u32 height,
         vulkan_swapchain* swapchain){
     VkExtent2D swapchain_extent = {width, height};
+    // Triple buffering here? (since two (or three?) image in process at same time.)
     swapchain->max_frames_in_flight = 2;
 
     // Choose a swap surface format.
@@ -152,9 +153,10 @@ void create(
     swapchain_extent.width  = KCLAMP(swapchain_extent.width, min.width, max.width);
     swapchain_extent.height = KCLAMP(swapchain_extent.height, min.height, max.height);
 
+    // triple bufferring? 
     u32 image_count = context->device.swapchain_support.capabilities.minImageCount + 1;
 
-    // ???
+    // caping image_count to maxImageCount
     if(context->device.swapchain_support.capabilities.maxImageCount>0 &&
         image_count> context->device.swapchain_support.capabilities.maxImageCount) {
         image_count = context->device.swapchain_support.capabilities.maxImageCount;
@@ -295,7 +297,6 @@ void create(
 }
 
 void destroy(vulkan_context* context, vulkan_swapchain* swapchain) {
-
     vkDeviceWaitIdle(context->device.logical_device);
 
     // destroy depth buffer

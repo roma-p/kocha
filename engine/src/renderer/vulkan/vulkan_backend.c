@@ -29,7 +29,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
     const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
     void* user_data);
 
-i32 find_memory_index (u32 type_filter, u32 property_flags);
+i32 find_memory_index(u32 type_filter, u32 property_flags);
 
 void create_command_buffers(renderer_backend* backend);
 void regenerate_frame_buffers(
@@ -49,6 +49,7 @@ b8 vulkan_renderer_backend_initialize(
     // TODO: custom allocator ! 
     context.allocator = 0;
 
+    // BUG HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     application_get_framebuffer_size(
             &cached_framebuffer_width,
             &cached_framebuffer_height
@@ -213,7 +214,7 @@ b8 vulkan_renderer_backend_initialize(
             &context,
             &context.main_renderpass,
             0, 0, context.framebuffer_width, context.framebuffer_height,
-            0.0f, 0.3f, 0.2f, 1.0f,
+            0.0f, 0.0f, 0.0f, 1.0f, // clear values defined here
             1.0f,
             0);
 
@@ -367,7 +368,6 @@ void vulkan_renderer_backend_on_resize(renderer_backend* backend, u16 width, u16
     LOG_INFO("vulkan renderer backend: w/h/gen: %i/%i/%llu", 
             width, height, context.framebuffer_size_last_generation
         );
-
 }
 
 b8 vulkan_renderer_backend_begin_frame(renderer_backend* backend, f32 delta_time){
@@ -456,10 +456,6 @@ b8 vulkan_renderer_backend_begin_frame(renderer_backend* backend, f32 delta_time
     context.main_renderpass.h = context.framebuffer_height;
     //context.main_renderpass.w = 50;
     //context.main_renderpass.h = 50;
-
-    LOG_TRACE("//");
-    LOG_TRACE("context frame buffer : %u x %u", context.framebuffer_width, context.framebuffer_height);
-    LOG_TRACE("context frame buffer : %f x %f", context.main_renderpass.w, context.main_renderpass.h);
 
     //Begin the render pass
     vulkan_renderpass_begin(
@@ -567,7 +563,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vk_debug_callback(
     return VK_FALSE;
 }
 
-// ???
+//???
 i32 find_memory_index(u32 type_filter, u32 property_flags) {
     VkPhysicalDeviceMemoryProperties memory_properties;    
     vkGetPhysicalDeviceMemoryProperties(context.device.physical_device, &memory_properties);

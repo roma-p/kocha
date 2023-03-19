@@ -49,13 +49,13 @@ b8 renderer_draw_frame(render_packet* packet){
     // if hte begin frame returned sucessfully, mid-frame operationsmay continue.
     if (renderer_begin_frame(packet->delta_time)) {
 
-    //end the frame, if this fails, likely uncoverable.
-    b8 result = renderer_end_frame(packet->delta_time);
+        //end the frame, if this fails, likely uncoverable.
+        b8 result = renderer_end_frame(packet->delta_time);
 
-    if(!result) {
-        LOG_ERROR("renderer_end_frame failed. Application shutting down");
-        return FALSE;
-    }
+        if(!result) {
+            LOG_ERROR("renderer_end_frame failed. Application shutting down");
+            return FALSE;
+        }
     }
     return TRUE;
 }

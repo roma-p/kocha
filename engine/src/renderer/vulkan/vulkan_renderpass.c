@@ -24,10 +24,11 @@ void vulkan_renderpass_create(
 
     // Main subpass
     VkSubpassDescription subpass = {};
+    // binding this render pass to graphics pipeline
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 
-    // binding this render pass to graphics pipeline
     // TODO: make this configurable.
+    // for now: attachment 0 is color; 1 is depth
     u32 attachment_description_count = 2;
     VkAttachmentDescription attachment_description[attachment_description_count];
 
@@ -143,24 +144,22 @@ void vulkan_renderpass_begin(
         VkFramebuffer frame_buffer){
 
     VkRenderPassBeginInfo begin_info = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};  
-    begin_info.renderPass = renderpass->handle;
+    begin_info.renderPass  = renderpass->handle;
     begin_info.framebuffer = frame_buffer;
     begin_info.renderArea.offset.x = renderpass->x;
     begin_info.renderArea.offset.y = renderpass->y;
-    begin_info.renderArea.extent.width = renderpass->w - 1;
-    begin_info.renderArea.extent.height = (i32)renderpass->h - 1;
+    begin_info.renderArea.extent.width  = renderpass->w - 1; // FIXME '-1'
+    begin_info.renderArea.extent.height = renderpass->h - 1; // FIXME '-1'
 
-    LOG_TRACE("render pass extent : %f x %f", renderpass->w, renderpass->h);
-
+    // setting clear values: "background default value".
     VkClearValue clear_values[2];
     kzero_memory(clear_values, sizeof(VkClearColorValue) * 2);
     clear_values[0].color.float32[0] = renderpass->r;
     clear_values[0].color.float32[1] = renderpass->g;
     clear_values[0].color.float32[2] = renderpass->b;
     clear_values[0].color.float32[3] = renderpass->a;
-    clear_values[1].depthStencil.depth = renderpass->depth;
+    clear_values[1].depthStencil.depth   = renderpass->depth;
     clear_values[1].depthStencil.stencil = renderpass->stencil;
-
     begin_info.clearValueCount = 2;
     begin_info.pClearValues = clear_values;
 

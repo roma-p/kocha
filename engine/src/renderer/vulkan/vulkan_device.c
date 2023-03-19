@@ -353,7 +353,6 @@ b8 select_physical_device(vulkan_context* context) {
         requirements.present = TRUE;
         requirements.transfer = TRUE;
         requirements.sampler_anisotropy = TRUE;
-        // TODO: APPLE DOES NOT HAVE ANY !
 
 #if KPLATFORM_APPLE
         requirements.discrete_gpu = FALSE;
